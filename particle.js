@@ -8,6 +8,7 @@ class Particle {
     this.vel = createVector();
     this.acc = createVector();
     this.maxSpeed = 3;
+    this.maxForce = 0.1;
     this.sight = 50;
     this.rays = [];
     // --- Właściwości pojazdu --- //
@@ -107,14 +108,21 @@ class Particle {
     const steering = p5.Vector.fromAngle(angle);
     steering.setMag(this.maxSpeed);
     steering.sub(this.vel);
+    steering.limit(this.maxForce);
     this.applyForce(steering);
     // console.log(output);
   }
 
   // --- Rysowanie pojazdu --- //
   show() {
+    push();
+    translate(this.pos.x, this.pos.y);
+    const heading = this.vel.heading();
+    rotate(heading);
     fill(255, 100);
-    ellipse(this.pos.x, this.pos.y, 7);
+    rectMode(CENTER);
+    rect(0, 0, 10, 5);
+    pop();
     for (let ray of this.rays) {
       // ray.show();
     }
