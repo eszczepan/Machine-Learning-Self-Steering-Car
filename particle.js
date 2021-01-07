@@ -113,6 +113,17 @@ class Particle {
     // console.log(output);
   }
 
+  bounds() {
+    if (
+      this.pos.x > width ||
+      this.pos.x < 0 ||
+      this.pos.y > height ||
+      this.pos.y < 0
+    ) {
+      this.dead = true;
+    }
+  }
+
   // --- Rysowanie pojazdu --- //
   show() {
     push();

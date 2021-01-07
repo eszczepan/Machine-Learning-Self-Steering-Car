@@ -41,6 +41,7 @@ function draw() {
   for (let particle of population) {
     particle.look(walls);
     particle.check(end);
+    particle.bounds();
     particle.update();
     particle.show();
   }
