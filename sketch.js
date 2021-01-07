@@ -18,13 +18,14 @@ function setup() {
   createCanvas(667, 600);
   // Przyspieszenie działana
   tf.setBackend("cpu");
-
   // --- Algorytm rysowania okrężnej trasy --- //
   background(0);
   stroke(255);
   noFill();
   let noiseMax = 2;
-  for (let a = 0; a < TWO_PI; a += radians(10)) {
+  const total = 30;
+  for (let i = 0; i < total; i++) {
+    let a = map(i, 0, total, 0, TWO_PI);
     let xoff = map(cos(a), -1, 1, 0, noiseMax);
     let yoff = map(sin(a), -1, 1, 0, noiseMax);
     let r = map(noise(xoff, yoff), 0, 1, 100, height / 2 - 20);
@@ -51,7 +52,11 @@ function setup() {
 
   // --- Pozycja startowa i końcowa --- //
   start = checkpoints[0];
-  end = checkpoints[checkpoints.length - 1];
+  end = checkpoints[checkpoints.length - 2];
+
+  let a = inside[inside.length - 1];
+  let b = outside[outside.length - 1];
+  walls.push(new Boundary(a.x, a.y, b.x, b.y));
 
   // --- Zainicjowanie pierwszej populacji --- //
   for (let i = 0; i < TOTAL; i++) {
@@ -86,8 +91,14 @@ function draw() {
     }
   }
 
+  // --- Rysowanie pojazdów, trasy i checkpointów --- //
   background(0);
-  for (wall of walls) {
+
+  for (let v of checkpoints) {
+    point(v.x, v.y);
+  }
+
+  for (let wall of walls) {
     wall.show();
   }
 
