@@ -50,11 +50,13 @@ class Particle {
   }
 
   // --- Sprawdza czy dystans pomiędzy pozycją a dystansem jest mniejszy niż 10 px --- //
-  check(target) {
-    const distance = p5.Vector.dist(this.pos, target);
-    if (distance < 10) {
-      this.finished = true;
-    }
+  check(checkpoints) {
+    // for(let i = 0; i < checkpoints.length; i++){
+    // }
+    // const distance = p5.Vector.dist(this.pos, target);
+    // if (distance < 10) {
+    //   this.finished = true;
+    // }
   }
 
   calculateFitness(target) {

@@ -29,13 +29,11 @@ function setup() {
     let xoff = map(cos(a), -1, 1, 0, noiseMax);
     let yoff = map(sin(a), -1, 1, 0, noiseMax);
     let r = map(noise(xoff, yoff), 0, 1, 100, height / 2 - 20);
-    let x = width / 2 + r * cos(a);
-    let y = height / 2 + r * sin(a);
     let x1 = width / 2 + (r - 50) * cos(a);
     let y1 = height / 2 + (r - 50) * sin(a);
     let x2 = width / 2 + (r + 50) * cos(a);
     let y2 = height / 2 + (r + 50) * sin(a);
-    checkpoints.push(createVector(x, y));
+    checkpoints.push(new Boundary(x1, y1, x2, y2));
     inside.push(createVector(x1, y1));
     outside.push(createVector(x2, y2));
   }
@@ -51,12 +49,13 @@ function setup() {
   }
 
   // --- Pozycja startowa i końcowa --- //
-  start = checkpoints[0];
-  end = checkpoints[checkpoints.length - 2];
+  start = checkpoints[0].midpoint();
+  end = checkpoints[checkpoints.length - 1].midpoint();
 
-  let a = inside[inside.length - 1];
-  let b = outside[outside.length - 1];
-  walls.push(new Boundary(a.x, a.y, b.x, b.y));
+  // --- Zbudowana ściana między pozycją wyjścową a końcową --- //
+  // let a = inside[inside.length - 1];
+  // let b = outside[outside.length - 1];
+  // walls.push(new Boundary(a.x, a.y, b.x, b.y));
 
   // --- Zainicjowanie pierwszej populacji --- //
   for (let i = 0; i < TOTAL; i++) {
@@ -72,7 +71,7 @@ function draw() {
   for (let n = 0; n < cycles; n++) {
     for (let particle of population) {
       particle.look(walls);
-      particle.check(end);
+      particle.check(checkpoints);
       particle.bounds();
       particle.update();
       particle.show();
@@ -94,8 +93,8 @@ function draw() {
   // --- Rysowanie pojazdów, trasy i checkpointów --- //
   background(0);
 
-  for (let v of checkpoints) {
-    point(v.x, v.y);
+  for (let cp of checkpoints) {
+    cp.show();
   }
 
   for (let wall of walls) {

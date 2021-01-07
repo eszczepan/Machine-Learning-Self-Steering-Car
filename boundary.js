@@ -4,6 +4,13 @@ class Boundary {
     this.b = createVector(x2, y2);
   }
 
+  midpoint() {
+    return createVector(
+      (this.a.x + this.b.x) * 0.5,
+      (this.a.y + this.b.y) * 0.5
+    );
+  }
+
   show() {
     stroke(255);
     line(this.a.x, this.a.y, this.b.x, this.b.y);
