@@ -19,6 +19,7 @@ class Ray {
     pop();
   }
 
+  // --- Rotowanie sensorami --- //
   rotate(offset) {
     this.dir = p5.Vector.fromAngle(this.angle + offset);
   }

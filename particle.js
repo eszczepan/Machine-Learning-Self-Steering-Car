@@ -25,7 +25,7 @@ class Particle {
     this.goal;
 
     // --- Tworzenie sensorów dla pojazdów --- //
-    for (let a = 0; a < 360; a += 45) {
+    for (let a = -45; a < 45; a += 5) {
       this.rays.push(new Ray(this.pos, radians(a)));
     }
 
@@ -129,10 +129,10 @@ class Particle {
       inputs[i] = map(record, 0, 50, 1, 0);
 
       // --- Rysowanie lini --- //
-      if (closest) {
-        stroke(255, 100);
-        line(this.pos.x, this.pos.y, closest.x, closest.y);
-      }
+      // if (closest) {
+      //   stroke(255, 100);
+      //   line(this.pos.x, this.pos.y, closest.x, closest.y);
+      // }
     }
 
     // Normalizacja velocity

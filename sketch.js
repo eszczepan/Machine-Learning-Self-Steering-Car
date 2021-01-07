@@ -1,4 +1,4 @@
-const TOTAL = 10;
+const TOTAL = 100;
 const MUTATION_RATE = 0.1;
 const LIFESPAN = 50;
 const SIGHT = 150;
