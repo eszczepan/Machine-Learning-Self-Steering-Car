@@ -1,3 +1,12 @@
+// --- Funkcja obliczająca dystans do checkpointa --- //
+function pldistance(p1, p2, x, y) {
+  const num = abs(
+    (p2.y - p1.y) * x - (p2.x - p1.x) * y + p2.x * p1.y - p2.y * p1.x
+  );
+  const den = p5.Vector.dist(p1, p2);
+  return num / den;
+}
+
 class Particle {
   constructor(brain) {
     // --- Właściwości pojazdu --- //
@@ -8,10 +17,12 @@ class Particle {
     this.vel = createVector();
     this.acc = createVector();
     this.maxSpeed = 3;
-    this.maxForce = 0.1;
-    this.sight = 50;
+    this.maxForce = 1;
+    this.sight = SIGHT;
     this.rays = [];
-    // --- Właściwości pojazdu --- //
+    this.index = 0;
+    this.counter = 0;
+    this.goal;
 
     // --- Tworzenie sensorów dla pojazdów --- //
     for (let a = 0; a < 360; a += 45) {
@@ -23,7 +34,11 @@ class Particle {
       this.brain = brain.copy();
     } else {
       // Sieć ma 8 wejść i warstwy ukrytej (tyle co sensorów) i jedno wyjście
-      this.brain = new NeuralNetwork(this.rays.length, this.rays.length, 1);
+      this.brain = new NeuralNetwork(
+        this.rays.length + 2,
+        this.rays.length + 2,
+        1
+      );
     }
   }
 
@@ -46,26 +61,41 @@ class Particle {
       this.vel.add(this.acc);
       this.vel.limit(this.maxSpeed);
       this.acc.set(0, 0);
+      this.counter++;
+    }
+
+    if (this.counter > LIFESPAN) {
+      this.dead = true;
     }
   }
 
   // --- Sprawdza czy dystans pomiędzy pozycją a dystansem jest mniejszy niż 10 px --- //
   check(checkpoints) {
-    // for(let i = 0; i < checkpoints.length; i++){
-    // }
-    // const distance = p5.Vector.dist(this.pos, target);
-    // if (distance < 10) {
-    //   this.finished = true;
-    // }
+    if (!this.finished) {
+      this.goal = checkpoints[this.index];
+      const distance = pldistance(
+        this.goal.a,
+        this.goal.b,
+        this.pos.x,
+        this.pos.y
+      );
+      if (distance < 5) {
+        this.index++;
+        this.counter = 0;
+        if (this.index === checkpoints.length - 1) {
+          this.finished = true;
+        }
+      }
+    }
   }
 
-  calculateFitness(target) {
-    if (this.finished) {
-      this.fitness = 1;
-    } else {
-      const distance = p5.Vector.dist(this.pos, target);
-      this.fitness = constrain(1 / distance, 0, 1);
-    }
+  calculateFitness() {
+    this.fitness = pow(2, this.index);
+    // if (this.finished) {
+    // } else {
+    //   const distance = p5.Vector.dist(this.pos, target);
+    //   this.fitness = constrain(1 / distance, 0, 1);
+    // }
   }
 
   // --- Funkcja sprawdzająca ściany i rejestrująca dystans od każdej z nich --- //
@@ -97,11 +127,17 @@ class Particle {
       inputs[i] = map(record, 0, 50, 1, 0);
 
       // --- Rysowanie lini --- //
-      if (closest) {
-        // stroke(255, 100);
-        // line(this.pos.x, this.pos.y, closest.x, closest.y);
-      }
+      // if (closest) {
+      //   stroke(255, 100);
+      //   line(this.pos.x, this.pos.y, closest.x, closest.y);
+      // }
     }
+
+    // Normalizacja velocity
+    const vel = this.vel.copy();
+    vel.normalize();
+    inputs.push(vel.x);
+    inputs.push(vel.y);
 
     // Wyjścia
     const output = this.brain.predict(inputs);
@@ -110,7 +146,7 @@ class Particle {
     const steering = p5.Vector.fromAngle(angle);
     steering.setMag(this.maxSpeed);
     steering.sub(this.vel);
-    steering.limit(this.maxForce);
+    // steering.limit(this.maxForce);
     this.applyForce(steering);
     // console.log(output);
   }
@@ -138,6 +174,9 @@ class Particle {
     pop();
     for (let ray of this.rays) {
       // ray.show();
+    }
+    if (this.goal) {
+      this.goal.show();
     }
   }
 }

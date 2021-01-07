@@ -1,5 +1,8 @@
 const TOTAL = 100;
-const MUTATION_RATE = 0.05;
+const MUTATION_RATE = 0.1;
+const LIFESPAN = 50;
+const SIGHT = 150;
+
 let walls = [];
 let ray;
 
@@ -24,15 +27,16 @@ function setup() {
   noFill();
   let noiseMax = 2;
   const total = 30;
+  const pathWidth = 60;
   for (let i = 0; i < total; i++) {
     let a = map(i, 0, total, 0, TWO_PI);
     let xoff = map(cos(a), -1, 1, 0, noiseMax);
     let yoff = map(sin(a), -1, 1, 0, noiseMax);
     let r = map(noise(xoff, yoff), 0, 1, 100, height / 2 - 20);
-    let x1 = width / 2 + (r - 50) * cos(a);
-    let y1 = height / 2 + (r - 50) * sin(a);
-    let x2 = width / 2 + (r + 50) * cos(a);
-    let y2 = height / 2 + (r + 50) * sin(a);
+    let x1 = width / 2 + (r - pathWidth) * cos(a);
+    let y1 = height / 2 + (r - pathWidth) * sin(a);
+    let x2 = width / 2 + (r + pathWidth) * cos(a);
+    let y2 = height / 2 + (r + pathWidth) * sin(a);
     checkpoints.push(new Boundary(x1, y1, x2, y2));
     inside.push(createVector(x1, y1));
     outside.push(createVector(x2, y2));
@@ -94,7 +98,7 @@ function draw() {
   background(0);
 
   for (let cp of checkpoints) {
-    cp.show();
+    // cp.show();
   }
 
   for (let wall of walls) {

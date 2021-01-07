@@ -28,9 +28,9 @@ function pickOne() {
   return child;
 }
 
-function calculateFitness(target) {
+function calculateFitness() {
   for (let particle of savedParticles) {
-    particle.calculateFitness(target);
+    particle.calculateFitness();
   }
 
   // Normalizowanie wszystkich wartości
