@@ -1,4 +1,4 @@
-const TOTAL = 100;
+const TOTAL = 10;
 const MUTATION_RATE = 0.1;
 const LIFESPAN = 50;
 const SIGHT = 150;
@@ -71,7 +71,7 @@ function setup() {
 
 function draw() {
   const cycles = speedSlider.value();
-
+  background(0);
   for (let n = 0; n < cycles; n++) {
     for (let particle of population) {
       particle.look(walls);
@@ -95,7 +95,6 @@ function draw() {
   }
 
   // --- Rysowanie pojazdów, trasy i checkpointów --- //
-  background(0);
 
   for (let cp of checkpoints) {
     // cp.show();

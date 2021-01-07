@@ -62,10 +62,12 @@ class Particle {
       this.vel.limit(this.maxSpeed);
       this.acc.set(0, 0);
       this.counter++;
-    }
-
-    if (this.counter > LIFESPAN) {
-      this.dead = true;
+      if (this.counter > LIFESPAN) {
+        this.dead = true;
+      }
+      for (let i = 0; i < this.rays.length; i++) {
+        this.rays[i].rotate(this.vel.heading());
+      }
     }
   }
 
@@ -127,10 +129,10 @@ class Particle {
       inputs[i] = map(record, 0, 50, 1, 0);
 
       // --- Rysowanie lini --- //
-      // if (closest) {
-      //   stroke(255, 100);
-      //   line(this.pos.x, this.pos.y, closest.x, closest.y);
-      // }
+      if (closest) {
+        stroke(255, 100);
+        line(this.pos.x, this.pos.y, closest.x, closest.y);
+      }
     }
 
     // Normalizacja velocity
