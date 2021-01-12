@@ -1,7 +1,8 @@
 const TOTAL = 100;
 const MUTATION_RATE = 0.1;
-const LIFESPAN = 50;
+const LIFESPAN = 20;
 const SIGHT = 150;
+let pathWidth = 30;
 
 let walls = [];
 let ray;
@@ -12,10 +13,14 @@ let savedParticles = [];
 let start, end;
 
 let speedSlider;
+let mut;
 
 const inside = [];
 const outside = [];
 const checkpoints = [];
+
+let generation = 1;
+const gen = document.getElementById("generation");
 
 function setup() {
   createCanvas(667, 600);
@@ -27,7 +32,6 @@ function setup() {
   noFill();
   let noiseMax = 2;
   const total = 30;
-  const pathWidth = 60;
   for (let i = 0; i < total; i++) {
     let a = map(i, 0, total, 0, TWO_PI);
     let xoff = map(cos(a), -1, 1, 0, noiseMax);
@@ -54,7 +58,7 @@ function setup() {
 
   // --- Pozycja startowa i końcowa --- //
   start = checkpoints[0].midpoint();
-  end = checkpoints[checkpoints.length - 1].midpoint();
+  end = checkpoints[checkpoints.length - 2].midpoint();
 
   // --- Zbudowana ściana między pozycją wyjścową a końcową --- //
   // let a = inside[inside.length - 1];
@@ -67,6 +71,7 @@ function setup() {
   }
   // --- Speed slider --- //
   speedSlider = createSlider(1, 10, 1);
+  mut = createSlider(1, 10, 1);
 }
 
 function draw() {
@@ -91,22 +96,26 @@ function draw() {
     // Jeżeli tablica z populacją jest pusta wywołaj nową generację
     if (population.length === 0) {
       nextGeneration();
+      generation++;
+      gen.textContent = `Generation: ${generation}`;
     }
   }
 
-  // --- Rysowanie pojazdów, trasy i checkpointów --- //
+  // --- Wszystkich checkpointów --- //
+  // for (let cp of checkpoints) {
+  //   // cp.show();
+  // }
 
-  for (let cp of checkpoints) {
-    // cp.show();
-  }
-
+  // --- Rysowanie ścian --- //
   for (let wall of walls) {
     wall.show();
   }
 
-  for (let particle of population) {
-    particle.show();
-  }
+  // // Rysowanie pojazdów
+  // for (let particle of population) {
+  //   // particle.show();
+  //   // console.log(particle);
+  // }
 
   // --- Narysowanie pozycji startowej i końcowej --- //
   ellipse(start.x, start.y, 10);

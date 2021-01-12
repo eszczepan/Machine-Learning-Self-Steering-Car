@@ -17,7 +17,7 @@ class Particle {
     this.vel = createVector();
     this.acc = createVector();
     this.maxSpeed = 3;
-    this.maxForce = 1;
+    this.maxForce = 0.5;
     this.sight = SIGHT;
     this.rays = [];
     this.index = 0;
@@ -34,11 +34,7 @@ class Particle {
       this.brain = brain.copy();
     } else {
       // Sieć ma 8 wejść i warstwy ukrytej (tyle co sensorów) i jedno wyjście
-      this.brain = new NeuralNetwork(
-        this.rays.length + 2,
-        this.rays.length + 2,
-        1
-      );
+      this.brain = new NeuralNetwork(this.rays.length, this.rays.length, 1);
     }
   }
 
@@ -91,6 +87,7 @@ class Particle {
     }
   }
 
+  // --- Funkcja wyliczająca dopasowanie, podnosi liczbę 2 do potęgi naliczonego indexu (index jest zależny od liczby checkpointów zaliczonych)
   calculateFitness() {
     this.fitness = pow(2, this.index);
     // if (this.finished) {
@@ -125,30 +122,30 @@ class Particle {
         this.dead = true;
       }
 
-      // --- Zamiana na 0 i 1. Jeżeli zanotowany dystans sensora (record) jest między 0 a 50 to input = 0, jeżeli jest mniejszy od 0 to input = 1 --- //
-      inputs[i] = map(record, 0, 50, 1, 0);
-
       // --- Rysowanie lini --- //
       // if (closest) {
       //   stroke(255, 100);
       //   line(this.pos.x, this.pos.y, closest.x, closest.y);
       // }
+
+      // Normalizacja velocity
+      // const vel = this.vel.copy();
+      // vel.normalize();
+      // inputs.push(vel.x);
+      // inputs.push(vel.y);
+
+      // ---WEJŚCIA Zamiana na 0 i 1. Jeżeli zanotowany dystans sensora (record) jest między 0 a 50 to input = 0, jeżeli jest mniejszy od 0 to input = 1 --- //
+      inputs[i] = map(record, 0, 50, 1, 0);
     }
-
-    // Normalizacja velocity
-    const vel = this.vel.copy();
-    vel.normalize();
-    inputs.push(vel.x);
-    inputs.push(vel.y);
-
     // Wyjścia
     const output = this.brain.predict(inputs);
-    // Kąt to wyjście z przedziału 0 - 1, tworzy przedział od 0 do dwa pi
-    const angle = map(output[0], 0, 1, 0, TWO_PI);
+    // Kąt to wyjście z przedziału 0 - 1, tworzy przedział od 0 do  pi
+    let angle = map(output[0], 0, 1, -PI, PI);
+    angle += this.vel.heading();
     const steering = p5.Vector.fromAngle(angle);
     steering.setMag(this.maxSpeed);
     steering.sub(this.vel);
-    // steering.limit(this.maxForce);
+    steering.limit(this.maxForce);
     this.applyForce(steering);
     // console.log(output);
   }
@@ -174,11 +171,11 @@ class Particle {
     rectMode(CENTER);
     rect(0, 0, 10, 5);
     pop();
-    for (let ray of this.rays) {
-      // ray.show();
-    }
-    if (this.goal) {
-      this.goal.show();
-    }
+    // for (let ray of this.rays) {
+    // ray.show();
+    // }
+    // if (this.goal) {
+    //   this.goal.show();
+    // }
   }
 }
