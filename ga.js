@@ -1,44 +1,37 @@
 function nextGeneration() {
-  calculateFitness(end);
-
-  // Pętla po każdym pojeździe w populacji i wywołanie kolejnej funkcji calculateFitness pochodzącej z klasy pojazdu
+  calculateFitness();
+  // Pętla po każdym pojeździe w populacji
   function calculateFitness() {
-    for (let particle of savedParticles) {
-      particle.calculateFitness();
+    for (let vehicle of savedVehicles) {
+      vehicle.calculateFitness();
     }
-
     // Normalizowanie wszystkich wartości
     let sum = 0;
-    for (let particle of savedParticles) {
-      sum += particle.fitness;
+    for (let vehicle of savedVehicles) {
+      sum += vehicle.fitness;
     }
-
-    for (let particle of savedParticles) {
-      particle.fitness = particle.fitness / sum;
+    for (let vehicle of savedVehicles) {
+      vehicle.fitness = vehicle.fitness / sum;
     }
-
     for (let i = 0; i < TOTAL; i++) {
       population[i] = pickOne();
     }
-
     // Dispose używa się do zarządzania pamięcią oraz wyczyszczenie matczynej tablicy
     for (let i = 0; i < TOTAL; i++) {
-      savedParticles[i].dispose();
+      savedVehicles[i].dispose();
     }
-    savedParticles = [];
+    savedVehicles = [];
   }
-
   function pickOne() {
     let index = 0;
     let r = random(1);
     while (r > 0) {
-      r = r - savedParticles[index].fitness;
+      r = r - savedVehicles[index].fitness;
       index++;
     }
     index--;
-    let particle = savedParticles[index];
-    // TODO implement copy Particle
-    let child = new Particle(particle.brain);
+    let vehicle = savedVehicles[index];
+    let child = new Vehicle(vehicle.brain);
     child.mutate();
     return child;
   }

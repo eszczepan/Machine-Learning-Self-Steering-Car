@@ -7,29 +7,29 @@ function pldistance(p1, p2, x, y) {
   return num / den;
 }
 
-class Particle {
+class Vehicle {
   constructor(brain) {
     // --- Właściwości pojazdu --- //
+    this.fitness = 0; // dopasowanie
+    this.pos = createVector(start.x, start.y); // pozycja pojazdu
+    this.vel = createVector(); // szybkość
+    this.acc = createVector(); // przyspieszenie
+    this.maxSpeed = 3; // maksymalna szybkość
+    this.maxForce = 0.5; // maksymalna siła
+    this.sight = SIGHT; // maksymalna rejestrowana odległość od band
+    this.rays = []; // sensory
+    this.index = 0; // wynik pojazdu
+    this.counter = 0; // licznik do usuwania pojazdu
     this.dead = false;
     this.finished = false;
-    this.fitness = 0;
-    this.pos = createVector(start.x, start.y);
-    this.vel = createVector();
-    this.acc = createVector();
-    this.maxSpeed = 3;
-    this.maxForce = 0.5;
-    this.sight = SIGHT;
-    this.rays = [];
-    this.index = 0;
-    this.counter = 0;
     this.goal;
 
     // --- Tworzenie sensorów dla pojazdów --- //
-    for (let a = -45; a < 45; a += 5) {
+    for (let a = -45; a < 45; a += 12.5) {
       this.rays.push(new Ray(this.pos, radians(a)));
     }
 
-    // --- Tworzenie sieci neuronowej dla pojazdów jeżeli nie są pierwszą generacją (wynika z alg. genetycznego--- //
+    // --- Tworzenie sieci neuronowej dla pojazdów jeżeli nie są pierwszą generacją (wynika z alg. genetycznego) --- //
     if (brain) {
       this.brain = brain.copy();
     } else {
@@ -67,7 +67,7 @@ class Particle {
     }
   }
 
-  // --- Sprawdza czy dystans pomiędzy pozycją a dystansem jest mniejszy niż 10 px --- //
+  // --- Sprawdza czy dystans pomiędzy pozycją a dystansem jest mniejszy niż 5 px --- //
   check(checkpoints) {
     if (!this.finished) {
       this.goal = checkpoints[this.index];
@@ -87,14 +87,9 @@ class Particle {
     }
   }
 
-  // --- Funkcja wyliczająca dopasowanie, podnosi liczbę 2 do potęgi naliczonego indexu (index jest zależny od liczby checkpointów zaliczonych)
+  // --- Funkcja wyliczająca dopasowanie (index jest zależny od liczby checkpointów zaliczonych)
   calculateFitness() {
     this.fitness = pow(2, this.index);
-    // if (this.finished) {
-    // } else {
-    //   const distance = p5.Vector.dist(this.pos, target);
-    //   this.fitness = constrain(1 / distance, 0, 1);
-    // }
   }
 
   // --- Funkcja sprawdzająca ściany i rejestrująca dystans od każdej z nich --- //
@@ -116,28 +111,14 @@ class Particle {
           }
         }
       }
-
-      // --- Usunięcie samochodu jeżeli długość sensora jest mniejsza niż dwa piksele --- //
+      // Usunięcie samochodu jeżeli długość sensora jest mniejsza niż dwa piksele
       if (record < 2) {
         this.dead = true;
       }
-
-      // --- Rysowanie lini --- //
-      // if (closest) {
-      //   stroke(255, 100);
-      //   line(this.pos.x, this.pos.y, closest.x, closest.y);
-      // }
-
-      // Normalizacja velocity
-      // const vel = this.vel.copy();
-      // vel.normalize();
-      // inputs.push(vel.x);
-      // inputs.push(vel.y);
-
-      // ---WEJŚCIA Zamiana na 0 i 1. Jeżeli zanotowany dystans sensora (record) jest między 0 a 50 to input = 0, jeżeli jest mniejszy od 0 to input = 1 --- //
+      // WEJŚCIA
       inputs[i] = map(record, 0, 50, 1, 0);
     }
-    // Wyjścia
+    // WYJŚCIA
     const output = this.brain.predict(inputs);
     // Kąt to wyjście z przedziału 0 - 1, tworzy przedział od 0 do  pi
     let angle = map(output[0], 0, 1, -PI, PI);
@@ -147,7 +128,6 @@ class Particle {
     steering.sub(this.vel);
     steering.limit(this.maxForce);
     this.applyForce(steering);
-    // console.log(output);
   }
 
   bounds() {
@@ -171,11 +151,11 @@ class Particle {
     rectMode(CENTER);
     rect(0, 0, 10, 5);
     pop();
-    // for (let ray of this.rays) {
-    // ray.show();
-    // }
-    // if (this.goal) {
-    //   this.goal.show();
-    // }
+    for (let ray of this.rays) {
+      ray.show();
+    }
+    if (this.goal) {
+      this.goal.show();
+    }
   }
 }

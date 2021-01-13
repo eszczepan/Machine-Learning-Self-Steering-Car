@@ -1,4 +1,4 @@
-const TOTAL = 100;
+const TOTAL = 50;
 const MUTATION_RATE = 0.1;
 const LIFESPAN = 20;
 const SIGHT = 150;
@@ -8,11 +8,11 @@ let walls = [];
 let ray;
 
 let population = [];
-let savedParticles = [];
+let savedVehicles = [];
 
 let start, end;
 
-let speedSlider;
+// let speedSlider = 1;
 let mut;
 
 const inside = [];
@@ -67,43 +67,43 @@ function setup() {
 
   // --- Zainicjowanie pierwszej populacji --- //
   for (let i = 0; i < TOTAL; i++) {
-    population[i] = new Particle();
+    population[i] = new Vehicle();
   }
   // --- Speed slider --- //
-  speedSlider = createSlider(1, 10, 1);
-  mut = createSlider(1, 10, 1);
+  // speedSlider = createSlider(1, 10, 1);
+  // mut = createSlider(1, 10, 1);
 }
 
 function draw() {
-  const cycles = speedSlider.value();
+  // const cycles = speedSlider.value();
   background(0);
-  for (let n = 0; n < cycles; n++) {
-    for (let particle of population) {
-      particle.look(walls);
-      particle.check(checkpoints);
-      particle.bounds();
-      particle.update();
-      particle.show();
-    }
+  // for (let n = 0; n < cycles; n++) {
+  for (let vehicle of population) {
+    vehicle.look(walls);
+    vehicle.check(checkpoints);
+    vehicle.bounds();
+    vehicle.update();
+    vehicle.show();
+  }
 
-    // --- Funkcja sprawdzająca czy dany pojazd w populacji ukończył albo się rozbił, jeśli tak to usuwa go z tablicy i dodaje go do innej tablicy --- //
-    for (let i = population.length - 1; i >= 0; i--) {
-      const particle = population[i];
-      if (particle.dead || particle.finished) {
-        savedParticles.push(population.splice(i, 1)[0]);
-      }
-    }
-    // Jeżeli tablica z populacją jest pusta wywołaj nową generację
-    if (population.length === 0) {
-      nextGeneration();
-      generation++;
-      gen.textContent = `Generation: ${generation}`;
+  // --- Funkcja sprawdzająca czy dany pojazd w populacji ukończył albo się rozbił, jeśli tak to usuwa go z tablicy i dodaje go do innej tablicy --- //
+  for (let i = population.length - 1; i >= 0; i--) {
+    const vehicle = population[i];
+    if (vehicle.dead || vehicle.finished) {
+      savedVehicles.push(population.splice(i, 1)[0]);
     }
   }
+  // Jeżeli tablica z populacją jest pusta wywołaj nową generację
+  if (population.length === 0) {
+    nextGeneration();
+    generation++;
+    gen.textContent = `Generacja: ${generation}`;
+  }
+  // }
 
   // --- Wszystkich checkpointów --- //
   // for (let cp of checkpoints) {
-  //   // cp.show();
+  //   cp.show();
   // }
 
   // --- Rysowanie ścian --- //
@@ -112,9 +112,9 @@ function draw() {
   }
 
   // // Rysowanie pojazdów
-  // for (let particle of population) {
-  //   // particle.show();
-  //   // console.log(particle);
+  // for (let vehicle of population) {
+  //   // vehicle.show();
+  //   // console.log(vehicle);
   // }
 
   // --- Narysowanie pozycji startowej i końcowej --- //
